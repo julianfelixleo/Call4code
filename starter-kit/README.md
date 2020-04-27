@@ -1,132 +1,155 @@
-This tutorial takes you through building a simple Node.js application that is connected to a COVID-19 chatbot using the Watson Assistant APIs. The steps are taken from this [assistant-simple repository](https://github.com/watson-developer-cloud/assistant-simple) and adopted for 2020 Call for Code challenge. You can use this tutorial as a starting template for the [COVID-19 challenge](https://developer.ibm.com/callforcode/getstarted/covid-19/).
+# Submission name
 
-## Learning objectives
+[![License](https://img.shields.io/badge/License-Apache2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0) [![Slack](https://img.shields.io/badge/Join-Slack-blue)](https://callforcode.org/slack) [![Website](https://img.shields.io/badge/View-Website-blue)](https://code-and-response.github.io/Project-Sample/)
 
-In this tutorial, you will:
+A basic GitHub repository example for Call for Code submissions and those projects that join the Code and Response initiative. Not all sections or files are required. You can make this as simple or as in-depth as you need.
 
-1. Learn how to create a simple Node.js application.
-2. Connect the application to a chatbot using the IBM Watson Assistant APIs.
-3. Test and run the application locally.
-4. Deploy the application on IBM Cloud as a Cloud Foundry application.
+*Read this in other languages: [English](README.md), [한국어](README.ko.md), [português](README.pt_br.md).*
 
-Here is a demo of the final application:
+## Contents
 
-![Chatbot demo](readme_images/covid-bot-demo.gif)
+1. [Short description](#short-description)
+1. [Demo video](#demo-video)
+1. [The architecture](#the-architecture)
+1. [Long description](#long-description)
+1. [Project roadmap](#project-roadmap)
+1. [Getting started](#getting-started)
+1. [Running the tests](#running-the-tests)
+1. [Live demo](#live-demo)
+1. [Built with](#built-with)
+1. [Contributing](#contributing)
+1. [Versioning](#versioning)
+1. [Authors](#authors)
+1. [License](#license)
+1. [Acknowledgments](#acknowledgments)
 
-## Prerequisites
+## Short description
 
-1. Sign up for an [IBM Cloud account](https://www.ibm.com/account/reg/us-en/signup?formid=urx-42793&eventid=cfc-2020?cm_mmc=OSocial_Blog-_-Audience+Developer_Developer+Conversation-_-WW_WW-_-cfc-2020-ghub-starterkit-communication_ov75914&cm_mmca1=000039JL&cm_mmca2=10008917).
-1. Download the [IBM Cloud CLI](https://cloud.ibm.com/docs/cli/index.html#overview). You will use it to push your Node.js application to the cloud.
-1. You should already have a Watson Assistant service created when you deployed the COVID bot. You need to get the credentials from that chatbot to use in your Node.js application:
-    - Log in to your IBM Cloud account.
-    - Go to resources and open your Watson Assistant service instance.
-    - You will be taken to Watson Assistant launch page. Click **Service Credentials** to view the service credentials.
-      ![Watson Assistant Credentials](readme_images/watson-assistant-credentials.png)
-    - You will use these credentials to populate the `.env` file when configuring the application below. Copy and save the JSON somewhere or leave this window open.
+### What's the problem?
 
-## Estimated **time**
+Part of the World Health Organization's guidance on limiting further spread of COVID-19 is to practice social distancing. As a result, schools in most affected areas are taking precautionary measures by closing their facilities. With school-aged children at home for an indeterminate amount of time,  keeping them engaged, entertained, and on top of their education is important.
 
-This tutorial will take you about 30 minutes to complete.
+### How can technology help?
 
-## Steps
+Schools and teachers can continue to engage with their students through virtual classrooms, and even create interactive spaces for classes. As parents face a new situation where they may need to homeschool their children, finding appropriate online resources is important as well.
 
-The following steps assume that you have created an assistant, imported the COVID skills, and have the Watson Assistant service credentials available.
+### The idea
 
-## Configuring the application
+It's imperative that learning and creating can continue when educational institutions have to shift the way they teach in times of crises, such as the COVID-19 pandemic. Providing a set of open source tools, backed by IBM Cloud and Watson Services, will enable educators to more easily make content available for their students.
 
-1. Clone the repository and cd into `starter-kit/covid-simple`.
+## Demo video
 
-2. Copy the *.env.example* file to a file called *.env*
+[![Watch the video](https://github.com/Code-and-Response/Liquid-Prep/blob/master/images/IBM-interview-video-image.png)](https://youtu.be/vOgCOoy_Bx0)
 
-    ```
-    cp .env.example .env
-    ```
+## The architecture
 
-3. Open the *.env* file and add the service credentials that you obtained in the previous step. 
+![Video transcription/translation app](https://developer.ibm.com/developer/tutorials/cfc-starter-kit-speech-to-text-app-example/images/cfc-covid19-remote-education-diagram-2.png)
 
-    The following example *.env* file configures the `apikey` and `url` for a Watson Assistant service instance hosted in the US East region:
+1. The user navigates to the site and uploads a video file.
+2. Watson Speech to Text processes the audio and extracts the text.
+3. Watson Translation (optionally) can translate the text to the desired language.
+4. The app stores the translated text as a document within Object Storage.
 
-    ```
-    ASSISTANT_IAM_APIKEY=X4rbi8vwZmKpXfowaS3GAsA7vdy17Qhxxxxxxxx
-    ASSISTANT_URL=https://gateway-wdc.watsonplatform.net/assistant/api
-    ```
+## Long description
 
-    - If your service instance uses `username` and `password` credentials, add the `ASSISTANT_USERNAME` and `ASSISTANT_PASSWORD` variables to the *.env* file.
+[More detail is available here](DESCRIPTION.md)
 
-    The following example *.env* file configures the `username`, `password`, and `url` for a Watson Assistant service instance hosted in the US South region:
+## Project roadmap
 
-    ```
-    ASSISTANT_USERNAME=522be-7b41-ab44-dec3-xxxxxxxx
-    ASSISTANT_PASSWORD=A4Z5BdGENxxxx
-    ASSISTANT_URL=https://gateway.watsonplatform.net/assistant/api
-    ```
-    
-    However, if your credentials contain an IAM API key, copy the `apikey` and `url` to the relevant fields.
-    
-    ```JSON
-      {
-        "apikey": "ca2905e6-7b5d-4408-9192-xxxxxxxx",
-        "iam_apikey_description": "Auto generated apikey during resource-key ...",
-        "iam_apikey_name": "auto-generated-apikey-62b71334-3ae3-4609-xxxxxxxx",
-        "iam_role_crn": "crn:v1:bluemix:public:iam::::serviceRole:Manager",
-        "iam_serviceid_crn": "crn:v1:bluemix:public:iam...",
-        "url": "https://gateway-syd.watsonplatform.net/assistant/api"
-      }
-    ```
-   
-   ```
-    ASSISTANT_IAM_APIKEY=ca2905e6-7b5d-4408-9192-xxxxxxxx
-    ```
+![Roadmap](roadmap.jpg)
 
-4. Add the `ASSISTANT_ID` to the previous properties:
+## Getting started
 
-    ```
-    ASSISTANT_ID=522be-7b41-ab44-dec3-xxxxxxxx
-    ```
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-## Running locally
+### Prerequisites
 
-1. Install the dependencies:
+What things you need to install the software and how to install them
 
-    ```
-    npm install
-    ```
+```bash
+dnf install wget
+wget http://www.example.com/install.sh
+bash install.sh
+```
 
-1. Run the application:
+### Installing
 
-    ```
-    npm start
-    ```
+A step by step series of examples that tell you how to get a development env running
 
-1. View the application in a browser at `localhost:3000`.
+Say what the step will be, for example
 
-## Deploy to IBM Cloud as a Cloud Foundry application
+```bash
+export TOKEN="fffd0923aa667c617a62f5A_fake_token754a2ad06cc9903543f1e85"
+export EMAIL="jane@example.com"
+dnf install npm
+node samplefile.js
+Server running at http://127.0.0.1:3000/
+```
 
-1. Log in to IBM Cloud with the [IBM Cloud CLI](https://cloud.ibm.com/docs/cli/index.html#overview):
+And repeat
 
-    ```
-    ibmcloud login
-    ```
+```bash
+curl localhost:3000
+Thanks for looking at Code-and-Response!
+```
 
-1. Target a Cloud Foundry organization and space:
+End with an example of getting some data out of the system or using it for a little demo
 
-    ```
-    ibmcloud target --cf
-    ```
+## Running the tests
 
-1. Edit the *manifest.yml* file. Change the **name** field to something unique.  
-  For example, `- name: covid-assistant-simple-yourname`.
+Explain how to run the automated tests for this system
 
-1. Deploy the application
+### Break down into end to end tests
 
-    ```
-    ibmcloud app push
-    ```
+Explain what these tests test and why, if you were using something like `mocha` for instnance
 
-1. View the application online at the app URL. For example, [covid-assistant-simple-yourname.mybluemix.net](covid-assistant-simple-yourname.mybluemix.net).
+```bash
+npm install mocha --save-dev
+vi test/test.js
+./node_modules/mocha/bin/mocha
+```
 
-## Take on COVID-19
+### And coding style tests
 
-You now know how to build a chatbot using Watson Assistant and a website on IBM Cloud that users to interact with the chatbot. You can see some other Watson Assistant sample applications in the [official documentation](https://cloud.ibm.com/docs/services/assistant?topic=assistant-sample-apps). 
+Explain what these tests test and why, if you chose `eslint` for example
 
-It's your turn to use these technologies to help tackle this pandemic and make a difference by accepting the [COVID-19 challenge](https://developer.ibm.com/callforcode/getstarted/covid-19/)!
+```bash
+npm install eslint --save-dev
+npx eslint --init
+npx eslint sample-file.js
+```
+
+## Live demo
+
+You can find a running system to test at [callforcode.mybluemix.net](http://callforcode.mybluemix.net/)
+
+## Built with
+
+* [IBM Cloudant](https://cloud.ibm.com/catalog?search=cloudant#search_results) - The NoSQL database used
+* [IBM Cloud Functions](https://cloud.ibm.com/catalog?search=cloud%20functions#search_results) - The compute platform for handing logic
+* [IBM API Connect](https://cloud.ibm.com/catalog?search=api%20connect#search_results) - The web framework used
+* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
+* [Maven](https://maven.apache.org/) - Dependency management
+* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+
+## Authors
+
+* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+
+See also the list of [contributors](https://github.com/Code-and-Response/Project-Sample/graphs/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the Apache 2 License - see the [LICENSE](LICENSE) file for details
+
+## Acknowledgments
+
+* Based on [Billie Thompson's README template](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2).
