@@ -1,0 +1,6 @@
+applications:
+- name: CovidChatBot
+  command: npm start
+  path: .
+  memory: 256M
+  instances: 1
