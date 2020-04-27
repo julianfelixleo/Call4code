@@ -1,0 +1,31 @@
+# Update <REGISTRY> <NAMESPACE> values before use
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: CovidChatBot
+  labels:
+    app: CovidChatBot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app:CovidChatBot
+  template:
+    metadata:
+      labels:
+        app: CovidChatBot
+    spec:
+      containers:
+      - name: CovidChatBot
+        image: <REGISTRY>/<NAMESPACE>/myapp:v1.0.0
+        ports:
+        - containerPort: 3000
+        imagePullPolicy: Always
+        env:
+        - name: CLOUDANT_URL
+          valueFrom:
+            secretKeyRef:
+              name: cloudant
+              key: url
+              optional: true
+
